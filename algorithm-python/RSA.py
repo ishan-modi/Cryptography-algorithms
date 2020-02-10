@@ -1,0 +1,28 @@
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+
+plaintext = open("plaintext.txt", 'rb').read()
+modulus_length = 4096
+privateKey = RSA.generate(modulus_length)
+publicKey = privateKey.publickey()
+fw = open('public.pem','wb')
+fw.write(publicKey.exportKey())
+fw.close()
+fw = open('private.pem', 'wb')
+fw.write(privateKey.exportKey())
+fw.close()
+publicKey = RSA.importKey(open('public.pem', 'rb').read())
+cipher = PKCS1_OAEP.new(publicKey)
+ciphertext = cipher.encrypt(plaintext)
+print("%s" % (privateKey.exportKey()))
+print("%s" % (publicKey.exportKey()))
+print("RSA Modulus:- ", privateKey.n)
+print("Public Exponent:- ", privateKey.e)
+print("Private Exponent:- ", privateKey.d)
+print("First Factor:- ", privateKey.p)
+print("Second Factor:- ", privateKey.q)
+print("Ciphertext:- "+str(ciphertext))
+privateKey = RSA.importKey(open('private.pem', 'rb').read())
+cipher = PKCS1_OAEP.new(privateKey)
+plaintext = cipher.decrypt(ciphertext)
+print("Plaintext:- "+str(plaintext))
